@@ -17,8 +17,23 @@ public class AppMain {
     looseCoupling.UserService userServiceLoose = new looseCoupling.UserService(smsService);
     userServiceLoose.notifyUser("KFC Order Processed...!");
 
+    /*
+        -> DEPENDENCY INJECTIONS <-
+    Constructor Injection - dependency is provided via constructor
+    Setter injection - dependency is provided via setter method
+    Field Injection - dependency is assigned directly to a field
+*/
+
+    // Setter dependency injection
+    looseCoupling.UserService userServiceLooseSetter
+        = new looseCoupling.UserService(smsService);
+    userServiceLooseSetter.setNotificationService(emailService);
+
+    // Field dependency injection
+    userServiceLooseSetter.notificationService = smsService;
+      
     
-    
+
 
   }
 

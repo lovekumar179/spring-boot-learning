@@ -1,7 +1,11 @@
 package looseCoupling;
 
 public class UserService {
-  NotificationService notificationService;
+//  NotificationService notificationService;
+  public NotificationService notificationService; // make it public for field injection
+
+  public UserService() {
+  }
 
   public UserService(NotificationService notificationService) {
     this.notificationService = notificationService;
@@ -10,5 +14,11 @@ public class UserService {
   public void notifyUser(String message){
     notificationService.send("Notification hello");
   }
+
+  public void setNotificationService(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
+
+  
 
 }

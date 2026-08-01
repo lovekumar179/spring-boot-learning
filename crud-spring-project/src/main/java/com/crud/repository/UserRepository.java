@@ -1,6 +1,6 @@
-package repository;
+package com.crud.repository;
 
-import db.DatabaseConnection;
+import com.crud.db.DatabaseConnection;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

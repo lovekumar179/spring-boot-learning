@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+
+<!--    <bean id="myBean" class="com.example.demo.GreetingService"/>-->
+
+
+    <!-- Creating Required beans for task -->
+    <bean id="EmailNotificationService" class="com.example.looseCoupling.EmailNotificationService"/>
+    <bean id="SMSNotificationService" class="com.example.looseCoupling.SMSNotificationService"/>
+
+    <bean id="UserServiceEmail" class="com.example.looseCoupling.UserService">
+        <property name="notificationService" ref="EmailNotificationService"/>
+    </bean>
+
+    <bean id="UserServiceSMS" class="com.example.looseCoupling.UserService">
+        <!-- below the dependency is injected through Setter injection -->
+        <!--        <property name="notificationService" ref="SMSNotificationService" />-->
+
+        <!-- now injecting dependency using constructor injection -->
+        <constructor-arg ref="SMSNotificationService"/>
+    </bean>
+
+
+    <!--    Doing HomeWork -->
+    <bean id="AdditionCalc" class="com.example.homework.Addition"/>
+    <bean id="SubtractionCalc" class="com.example.homework.Subtraction"/>
+
+    <bean id="Add" class="com.example.homework.UserResultShow">
+        <constructor-arg ref="AdditionCalc"/>
+    </bean>
+
+    <bean id="Subtract" class="com.example.homework.UserResultShow">
+        <constructor-arg ref="SubtractionCalc"/>
+    </bean>
+
+
+</beans>

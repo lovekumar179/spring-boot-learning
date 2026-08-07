@@ -81,6 +81,8 @@ public class UserController {
 
 // TODO: Started Learning Dynamic URLs
 
+  // NOTE: @PathVariable
+
   // /user/1, /user/2, /user/3
   /* @GetMapping("/{id}")
   public ResponseEntity<User> getUser(@PathVariable int id){
@@ -108,6 +110,32 @@ public class UserController {
     if (!userDb.containsKey(id))
       return ResponseEntity.notFound().build();
     return ResponseEntity.ok(userDb.get(id));
+  }
+
+  // NOTE: Learning @RequestParameters
+  // example Mandatory request Param
+
+  // /users/search?name=john
+  /* @GetMapping("/search")
+  public ResponseEntity<List<User>> searchUsers(@RequestParam String name){
+    System.out.println(name);
+    return ResponseEntity.ok(new ArrayList<>(userDb.values()));
+  }*/
+
+
+  // example optional request Param
+  // /users/search?name=john
+  @GetMapping("/search")
+  public ResponseEntity<List<User>> searchUsers(
+      @RequestParam(required = false, defaultValue = "love") String name,
+      @RequestParam(required = false, defaultValue = "love@gmail.com") String email
+  ){
+    System.out.println(name);
+    List<User> users = userDb.values().stream()
+        .filter(u -> u.getName().equalsIgnoreCase(name))
+        .filter(u -> u.getEmail().equalsIgnoreCase(email))
+        .toList();
+    return ResponseEntity.ok(users);
   }
 
 }

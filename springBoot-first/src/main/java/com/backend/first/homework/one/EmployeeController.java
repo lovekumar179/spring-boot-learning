@@ -1,4 +1,4 @@
-package com.backend.first.homework;
+package com.backend.first.homework.one;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

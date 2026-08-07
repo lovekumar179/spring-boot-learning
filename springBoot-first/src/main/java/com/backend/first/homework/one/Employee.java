@@ -1,4 +1,4 @@
-package com.backend.first.homework;
+package com.backend.first.homework.one;
 
 public class Employee {
   private int id;

@@ -22,7 +22,7 @@ public class UserController {
   }*/
   //NOTE: with response entity
   @PostMapping
-  public ResponseEntity<User> createUser(@RequestBody User user){
+  public ResponseEntity<User> createUser(@RequestBody User user) {
     System.out.println(user.getEmail());
     userDb.putIfAbsent(user.getId(), user);
 
@@ -53,7 +53,7 @@ public class UserController {
   }*/
 
   @PutMapping
-  public ResponseEntity<User> updateUser(@RequestBody User user){
+  public ResponseEntity<User> updateUser(@RequestBody User user) {
     if (!userDb.containsKey(user.getId()))
       return ResponseEntity.notFound().build();
     userDb.put(user.getId(), user);
@@ -63,7 +63,7 @@ public class UserController {
 
   // /user/1, /user/2, /user/3
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable int id){
+  public ResponseEntity<String> deleteUser(@PathVariable int id) {
     if (!userDb.containsKey(id))
       return ResponseEntity.notFound().build();
     userDb.remove(id);
@@ -75,7 +75,7 @@ public class UserController {
 //  @GetMapping({"users", "/user/{id}"}) assigned to URLs to same mapping
 
   @GetMapping
-  public List<User> getAllUsers(){
+  public List<User> getAllUsers() {
     return new ArrayList<>(userDb.values());
   }
 
@@ -95,7 +95,7 @@ public class UserController {
   @GetMapping("/{userId}")
   public ResponseEntity<User> getUser(
       @PathVariable(value = "userId", required = false) int id
-  ){
+  ) {
     if (!userDb.containsKey(id))
       return ResponseEntity.notFound().build();
     return ResponseEntity.ok(userDb.get(id));
@@ -105,8 +105,8 @@ public class UserController {
   public ResponseEntity<User> getUserOrder(
       @PathVariable("userId") int id,
       @PathVariable int orderId
-  ){
-    System.out.println("ORDER ID: "+orderId);
+  ) {
+    System.out.println("ORDER ID: " + orderId);
     if (!userDb.containsKey(id))
       return ResponseEntity.notFound().build();
     return ResponseEntity.ok(userDb.get(id));
@@ -129,13 +129,32 @@ public class UserController {
   public ResponseEntity<List<User>> searchUsers(
       @RequestParam(required = false, defaultValue = "love") String name,
       @RequestParam(required = false, defaultValue = "love@gmail.com") String email
-  ){
+  ) {
     System.out.println(name);
     List<User> users = userDb.values().stream()
         .filter(u -> u.getName().equalsIgnoreCase(name))
         .filter(u -> u.getEmail().equalsIgnoreCase(email))
         .toList();
     return ResponseEntity.ok(users);
+  }
+
+//  TODO: learning about request headers
+
+//  @GetMapping("/info")
+//  public String getInfo(@RequestHeader("User-Agent") String UserAgent){
+//    return "User Agent: "+UserAgent;
+//  }
+
+  //using all annotations in one api
+  @GetMapping("/info/{id}")
+  public String getInfo(
+      @PathVariable int id,
+      @RequestParam String name,
+      @RequestHeader("User-Agent") String UserAgent
+  ) {
+    return "User Agent: " + UserAgent
+        + " : " + id
+        + " : " + name;
   }
 
 }

@@ -71,9 +71,43 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
+//  this syntax is also allowed
+//  @GetMapping({"users", "/user/{id}"}) assigned to URLs to same mapping
+
   @GetMapping
   public List<User> getAllUsers(){
     return new ArrayList<>(userDb.values());
+  }
+
+// TODO: Started Learning Dynamic URLs
+
+  // /user/1, /user/2, /user/3
+  /* @GetMapping("/{id}")
+  public ResponseEntity<User> getUser(@PathVariable int id){
+    if (!userDb.containsKey(id))
+      return ResponseEntity.notFound().build();
+    return ResponseEntity.ok(userDb.get(id));
+  }*/
+
+  // made userId optional
+  @GetMapping("/{userId}")
+  public ResponseEntity<User> getUser(
+      @PathVariable(value = "userId", required = false) int id
+  ){
+    if (!userDb.containsKey(id))
+      return ResponseEntity.notFound().build();
+    return ResponseEntity.ok(userDb.get(id));
+  }
+
+  @GetMapping("/{userId}/orders/{orderId}")
+  public ResponseEntity<User> getUserOrder(
+      @PathVariable("userId") int id,
+      @PathVariable int orderId
+  ){
+    System.out.println("ORDER ID: "+orderId);
+    if (!userDb.containsKey(id))
+      return ResponseEntity.notFound().build();
+    return ResponseEntity.ok(userDb.get(id));
   }
 
 }

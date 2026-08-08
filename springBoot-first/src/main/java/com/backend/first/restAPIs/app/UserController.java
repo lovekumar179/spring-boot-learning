@@ -4,32 +4,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-  private Map<Integer, User> userDb = new HashMap<>();
+  private final UserService userService;
+
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
   /* @PostMapping
-  public String createUser(@RequestBody User user){
-    System.out.println(user.getEmail());
-    userDb.putIfAbsent(user.getId(), user);
-    return "User created successfully...!";
-  }*/
+    public String createUser(@RequestBody User user){
+      System.out.println(user.getEmail());
+      userDb.putIfAbsent(user.getId(), user);
+      return "User created successfully...!";
+    }*/
   //NOTE: with response entity
   @PostMapping
   public ResponseEntity<User> createUser(@RequestBody User user) {
-    System.out.println(user.getEmail());
-    userDb.putIfAbsent(user.getId(), user);
-
-//    return ResponseEntity
-//        .status(HttpStatus.CREATED)
-//        .body(user);
-    return new ResponseEntity<>(user, HttpStatus.CREATED);
+    User createdUser = userService.createUser(user);
+    return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
   }
 
 /* // 1, -> John, john@email.com
@@ -49,25 +45,23 @@ public class UserController {
           .body("User not found for with ID: "+user.getId());
     
     userDb.put(user.getId(), user);
-    return new ResponseEntity<>("Update Successful..!", HttpStatus.OK);
+    return new ResponseEntity<>("Update Successful!", HttpStatus.OK);
   }*/
 
   @PutMapping
   public ResponseEntity<User> updateUser(@RequestBody User user) {
-    if (!userDb.containsKey(user.getId()))
-      return ResponseEntity.notFound().build();
-    userDb.put(user.getId(), user);
-//    return ResponseEntity.status(HttpStatus.OK).body(user);
-    return ResponseEntity.ok(user);
+    User updated = userService.updateUser(user);
+    if (updated == null)
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.ok(updated);
   }
 
   // /user/1, /user/2, /user/3
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteUser(@PathVariable int id) {
-    if (!userDb.containsKey(id))
+    boolean isDeleted = userService.deleteUser(id);
+    if (!isDeleted)
       return ResponseEntity.notFound().build();
-    userDb.remove(id);
-//    return ResponseEntity.ok("User Deleted Successfully...!");
     return ResponseEntity.noContent().build();
   }
 
@@ -76,7 +70,7 @@ public class UserController {
 
   @GetMapping
   public List<User> getAllUsers() {
-    return new ArrayList<>(userDb.values());
+    return userService.getALlUsers();
   }
 
 // TODO: Started Learning Dynamic URLs
@@ -96,9 +90,10 @@ public class UserController {
   public ResponseEntity<User> getUser(
       @PathVariable(value = "userId", required = false) int id
   ) {
-    if (!userDb.containsKey(id))
+    User user = userService.getUserById(id);
+    if (user == null)
       return ResponseEntity.notFound().build();
-    return ResponseEntity.ok(userDb.get(id));
+    return ResponseEntity.ok(user);
   }
 
   @GetMapping("/{userId}/orders/{orderId}")
@@ -106,10 +101,10 @@ public class UserController {
       @PathVariable("userId") int id,
       @PathVariable int orderId
   ) {
-    System.out.println("ORDER ID: " + orderId);
-    if (!userDb.containsKey(id))
+    User user = userService.getUserById(id);
+    if (user == null)
       return ResponseEntity.notFound().build();
-    return ResponseEntity.ok(userDb.get(id));
+    return ResponseEntity.ok(user);
   }
 
   // NOTE: Learning @RequestParameters
@@ -130,12 +125,8 @@ public class UserController {
       @RequestParam(required = false, defaultValue = "love") String name,
       @RequestParam(required = false, defaultValue = "love@gmail.com") String email
   ) {
-    System.out.println(name);
-    List<User> users = userDb.values().stream()
-        .filter(u -> u.getName().equalsIgnoreCase(name))
-        .filter(u -> u.getEmail().equalsIgnoreCase(email))
-        .toList();
-    return ResponseEntity.ok(users);
+
+    return ResponseEntity.ok(userService.searchUsers(name, email));
   }
 
 //  TODO: learning about request headers

@@ -1,7 +1,10 @@
 package com.backend.first.restAPIs.app.service;
 
+import com.backend.first.restAPIs.app.controller.UserController;
 import com.backend.first.restAPIs.app.exceptions.UserNotFoundException;
 import com.backend.first.restAPIs.app.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,8 +16,14 @@ import java.util.Map;
 public class UserService {
 
   private final Map<Integer, User> userDb = new HashMap<>();
+  private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
   public User createUser(User user) {
+    logger.info("Creating User... INFO");
+    logger.debug("Creating User... DEBUG");
+    logger.trace("Creating User... TRACE");
+    logger.warn("Creating User... WARN");
+    logger.error("Creating User... ERROR");
     System.out.println(user.getEmail());
     userDb.putIfAbsent(user.getId(), user);
 
@@ -25,8 +34,10 @@ public class UserService {
   }
 
   public User updateUser(User user) {
-    if (!userDb.containsKey(user.getId()))
-      throw new UserNotFoundException("User with ID: "+user.getId()+" does not exist!.");
+    if (!userDb.containsKey(user.getId())) {
+      logger.error("Error when finding user with ID {}", user.getId());
+      throw new UserNotFoundException("User with ID: " + user.getId() + " does not exist!.");
+    }
     userDb.put(user.getId(), user);
     return user;
   }

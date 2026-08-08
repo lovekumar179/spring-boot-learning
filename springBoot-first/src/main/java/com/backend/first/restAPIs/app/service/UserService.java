@@ -1,5 +1,7 @@
-package com.backend.first.restAPIs.app;
+package com.backend.first.restAPIs.app.service;
 
+import com.backend.first.restAPIs.app.exceptions.UserNotFoundException;
+import com.backend.first.restAPIs.app.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,14 +26,14 @@ public class UserService {
 
   public User updateUser(User user) {
     if (!userDb.containsKey(user.getId()))
-      throw new IllegalArgumentException("User with ID: "+user.getId()+" does not exist!.");
+      throw new UserNotFoundException("User with ID: "+user.getId()+" does not exist!.");
     userDb.put(user.getId(), user);
     return user;
   }
 
   public boolean deleteUser(int id) {
     if (!userDb.containsKey(id))
-      return false;
+      throw new UserNotFoundException("User with ID: "+id+" does not exist!.");
     userDb.remove(id);
     return true;
   }

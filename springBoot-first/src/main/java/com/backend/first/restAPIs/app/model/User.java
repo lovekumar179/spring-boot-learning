@@ -1,4 +1,4 @@
-package com.backend.first.restAPIs.app;
+package com.backend.first.restAPIs.app.model;
 
 // POJO class: plain all java obj
 public class User {

@@ -2,6 +2,8 @@ package com.backend.first.restAPIs.app.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 // POJO class: plain all java obj                       
 @Entity
 @Table(name = "users")
@@ -11,6 +13,12 @@ public class User {
   private Integer id;
   private String name;
   private String email;
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  private Profile profile;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Post> posts;
 
   public User() {
   }
@@ -43,5 +51,21 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public Profile getProfile() {
+    return profile;
+  }
+
+  public void setProfile(Profile profile) {
+    this.profile = profile;
+  }
+
+  public List<Post> getPosts() {
+    return posts;
+  }
+
+  public void setPosts(List<Post> posts) {
+    this.posts = posts;
   }
 }

@@ -18,22 +18,14 @@ public class UserService {
   private final UserRepository userRepository;
 
   public UserResponseDto register(RegisterRequestDto requestDto) {
-    User user = new User(
-        null,
-        requestDto.getEmail(),
-        requestDto.getPassword(),
-        requestDto.getFirstName(),
-        requestDto.getLastName(),
-        Instant.parse("2026-08-18T14:32:00Z")
-            .atZone(ZoneOffset.UTC)
-            .toLocalDateTime(),
-        Instant.parse("2026-08-18T14:32:00Z")
-            .atZone(ZoneOffset.UTC)
-            .toLocalDateTime(),
-        List.of(),
-        List.of()
-    );
-
+//    User user = new User(null, requestDto.getEmail(), requestDto.getPassword(), requestDto.getFirstName(), requestDto.getLastName(), Instant.parse("2026-08-18T14:32:00Z").atZone(ZoneOffset.UTC).toLocalDateTime(), Instant.parse("2026-08-18T14:32:00Z").atZone(ZoneOffset.UTC).toLocalDateTime(), List.of(), List.of());
+    //NOTE: by using builder pattern
+      User user = User.builder()
+          .email(requestDto.getEmail())
+          .firstName(requestDto.getFirstName())
+          .lastName(requestDto.getLastName())
+          .password(requestDto.getPassword())
+          .build(); // all other fields will be set null
     User savedUser = userRepository.save(user);
     return mapToResponse(savedUser);
   }

@@ -3,13 +3,9 @@ package com.project.fitness.controller;
 import com.project.fitness.dto.ActivityRequestDto;
 import com.project.fitness.dto.ActivityResponseDto;
 import com.project.fitness.service.ActivityService;
-import com.project.fitness.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,9 +22,11 @@ public class ActivityController {
     return ResponseEntity.ok(activityService.trackActivity(activityRequestDto));
   }
 
-//  @GetMapping
-//  public ResponseEntity<List<ActivityResponseDto>> trackActivity() {
-//    return "";
-//  }
+  @GetMapping
+  public ResponseEntity<List<ActivityResponseDto>> getUserActivities(
+      @RequestHeader(value = "X-User-ID") String userId
+  ) {
+    return ResponseEntity.ok(activityService.getAllActivities(userId));
+  }
 
 }

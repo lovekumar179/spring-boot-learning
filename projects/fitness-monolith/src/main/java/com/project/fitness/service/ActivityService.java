@@ -7,7 +7,11 @@ import com.project.fitness.model.User;
 import com.project.fitness.repository.ActivityRepository;
 import com.project.fitness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,17 @@ public class ActivityService {
     activityResponseDto.setUpdateAt(activity.getUpdateAt());
 
     return activityResponseDto;
+
+  }
+
+
+  public List<ActivityResponseDto> getAllActivities(String userId) {
+    List<Activity> activityList = activityRepository.findByUserId(userId);
+
+    return activityList.stream()
+        .map(this::mapToResponse)
+        .collect(Collectors.toList());
+
 
   }
 }

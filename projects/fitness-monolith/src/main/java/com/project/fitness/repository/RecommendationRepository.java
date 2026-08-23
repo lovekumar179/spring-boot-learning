@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.project.fitness.model.Recommendation;
 
+import java.util.List;
+
 @Repository
 public interface RecommendationRepository extends JpaRepository<Recommendation, String>{
-  
+
+  List<Recommendation> findByUserId(String userId);
 }

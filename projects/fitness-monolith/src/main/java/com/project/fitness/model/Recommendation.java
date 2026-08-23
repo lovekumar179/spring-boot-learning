@@ -6,16 +6,20 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Recommendation {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,7 +52,10 @@ public class Recommendation {
   @Column(columnDefinition = "json")
   private List<String> safety;
 
+  @CreationTimestamp
   private LocalDateTime createdAt;
+
+  @UpdateTimestamp
   private LocalDateTime updatedAt;
 
 }

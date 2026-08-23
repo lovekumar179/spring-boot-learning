@@ -3,10 +3,13 @@ package com.project.fitness.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Activity {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,7 +42,11 @@ public class Activity {
   private Integer duration;
   private Integer caloriesBurned;
   private LocalDateTime startTime;
+
+  @CreationTimestamp
   private LocalDateTime createdAt;
+
+  @UpdateTimestamp
   private LocalDateTime updateAt;
 
   @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)

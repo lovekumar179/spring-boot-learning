@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -40,14 +42,20 @@ public class SecurityConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    UserDetails user1 = User.withUsername("user1").password("{noop}pass1") // only for learning not recommended
+    UserDetails user1 = User.withUsername("user1")
+//            .password("{noop}pass1") // only for learning not recommended
+            .password(passwordEncoder().encode("pass1"))
             .roles("USER").build();
 
-    UserDetails admin = User.withUsername("admin").password("{noop}adminPass") // only for learning not recommended
+    UserDetails admin = User.withUsername("admin")
+//            .password("{noop}adminPass") // only for learning not recommended
+            .password(passwordEncoder().encode("adminPass"))
             .roles("ADMIN") // ROLE_ADMIN
             .build();
 
-    UserDetails user2 = User.withUsername("user2").password("{noop}pass2") // only for learning not recommended
+    UserDetails user2 = User.withUsername("user2")
+//            .password("{noop}pass2") // only for learning not recommended
+            .password(passwordEncoder().encode("pass2"))
             .roles("USER") // ROLE_USER
             .build();
 
@@ -58,7 +66,11 @@ public class SecurityConfig {
     userDetailsManager.createUser(user2);
     userDetailsManager.createUser(admin);
     return userDetailsManager;
+  }
 
+  @Bean
+  public PasswordEncoder passwordEncoder(){
+    return new BCryptPasswordEncoder();
   }
 
 }

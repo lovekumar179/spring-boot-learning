@@ -23,7 +23,8 @@ public class HelloController {
   JWTUtils jwtUtils;
 
   //  @PreAuthorize("hasRole('ADMIN')") // Method lvl RBAC(role based access control)
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // MBAC(method based access control)
+//  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  // MBAC(method based access control)
   @GetMapping("/hello")
   public String sayHello() {
     return "Hello Spring Security";

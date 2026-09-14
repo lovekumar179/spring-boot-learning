@@ -1,11 +1,10 @@
 package com.backend.security;
-// Configuration file for spring security 
+// Configuration file for spring security
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -28,19 +26,26 @@ import javax.sql.DataSource;
 public class SecurityConfig {
 
   @Autowired
-  DataSource dataSource; // have connection details and gots from application.properties
+  DataSource dataSource; // have connection details and gotten from application.properties
+
+  @Autowired
+  AuthTokenFilter authTokenFilter;
 
   // TODO: Centralized role based access control (RBAC)
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) {
     http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorizeRequests ->
-            authorizeRequests.requestMatchers("/admin/**").hasRole("ADMIN")
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers("/signin").permitAll()
 //                    .requestMatchers("/user/**").hasRole("USER")
-                    .anyRequest().authenticated());
+            .anyRequest().authenticated());
 //    http.httpBasic(Customizer.withDefaults());
+
+    http.addFilterBefore(authTokenFilter,
+            UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 
@@ -48,24 +53,20 @@ public class SecurityConfig {
   public UserDetailsService userDetailsService() {
     UserDetails user1 = User.withUsername("user1")
 //            .password("{noop}pass1") // only for learning not recommended
-            .password(passwordEncoder().encode("pass1"))
-            .roles("USER").build();
+            .password(passwordEncoder().encode("pass1")).roles("USER").build();
 
     UserDetails admin = User.withUsername("admin")
 //            .password("{noop}adminPass") // only for learning not recommended
-            .password(passwordEncoder().encode("adminPass"))
-            .roles("ADMIN") // ROLE_ADMIN
+            .password(passwordEncoder().encode("adminPass")).roles("ADMIN") // ROLE_ADMIN
             .build();
 
     UserDetails user2 = User.withUsername("user2")
 //            .password("{noop}pass2") // only for learning not recommended
-            .password(passwordEncoder().encode("pass2"))
-            .roles("USER") // ROLE_USER
+            .password(passwordEncoder().encode("pass2")).roles("USER") // ROLE_USER
             .build();
 
 //    return new InMemoryUserDetailsManager(user1);
-    JdbcUserDetailsManager userDetailsManager = new
-            JdbcUserDetailsManager(dataSource);
+    JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
 
     if (!userDetailsManager.userExists(user1.getUsername())) {
       userDetailsManager.createUser(user1);
@@ -88,9 +89,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(
-          AuthenticationConfiguration builder
-  ) {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) {
     return builder.getAuthenticationManager();
   }
 

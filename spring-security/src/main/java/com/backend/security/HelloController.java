@@ -44,12 +44,7 @@ public class HelloController {
   public String login(@RequestBody LoginRequest loginRequest) {
     Authentication authentication; // represents an authenticated User
     try {
-      authentication = authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(
-                      loginRequest.getUserName(),
-                      loginRequest.getPassword()
-              )
-      );
+      authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
     } catch (AuthenticationException e) {
       e.printStackTrace();
       return "Could Not Authenticate";
@@ -57,10 +52,8 @@ public class HelloController {
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    String jwtToken = jwtUtils.generateTokenFormUsername(userDetails.getUsername());
-
+    String jwtToken = jwtUtils.generateTokenFormUsername(userDetails);
     return jwtToken;
-
   }
 
 }

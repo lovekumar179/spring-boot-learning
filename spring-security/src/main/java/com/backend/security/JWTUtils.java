@@ -1,5 +1,6 @@
 package com.backend.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -24,13 +24,21 @@ public class JWTUtils {
     return null;
   }
 
-  public String generateTokenFormUsername(String userName) {
+  public String generateTokenFormUsername(UserDetails userDetails) {
     return Jwts.builder()
-            .subject(userName)
+            .subject(userDetails.getUsername())
+            .claim("roles", userDetails.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .toList())
             .issuedAt(new Date())
             .expiration(new Date(new Date().getTime() + jwtExpirationsMs))
             .signWith(key())
             .compact();
+  }
+
+  public Claims getAllClaims(String jwt) {
+    return  Jwts.parser().verifyWith((SecretKey) key())
+            .build().parseSignedClaims(jwt).getPayload();
   }
 
   public boolean validateJwtToken(String jwtToken) {
@@ -42,7 +50,7 @@ public class JWTUtils {
     return true;
   }
 
-  public Key key() {
+  public  Key key() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 

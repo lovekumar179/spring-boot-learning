@@ -1,10 +1,14 @@
 package com.project.fitness.service;
 
+import com.project.fitness.dto.LoginRequest;
 import com.project.fitness.dto.RegisterRequestDto;
 import com.project.fitness.dto.UserResponseDto;
 import com.project.fitness.model.User;
+import com.project.fitness.model.UserRole;
 import com.project.fitness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,21 +20,26 @@ import java.util.List;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   public UserResponseDto register(RegisterRequestDto requestDto) {
 //    User user = new User(null, requestDto.getEmail(), requestDto.getPassword(), requestDto.getFirstName(), requestDto.getLastName(), Instant.parse("2026-08-18T14:32:00Z").atZone(ZoneOffset.UTC).toLocalDateTime(), Instant.parse("2026-08-18T14:32:00Z").atZone(ZoneOffset.UTC).toLocalDateTime(), List.of(), List.of());
     //NOTE: by using builder pattern
-      User user = User.builder()
-          .email(requestDto.getEmail())
-          .firstName(requestDto.getFirstName())
-          .lastName(requestDto.getLastName())
-          .password(requestDto.getPassword())
-          .build(); // all other fields will be set null
+
+    UserRole role = requestDto.getRole() != null ? requestDto.getRole() : UserRole.USER;
+
+    User user = User.builder()
+            .email(requestDto.getEmail())
+            .firstName(requestDto.getFirstName())
+            .lastName(requestDto.getLastName())
+            .password(passwordEncoder.encode(requestDto.getPassword()))
+            .role(role)
+            .build(); // all other fields will be set null
     User savedUser = userRepository.save(user);
     return mapToResponse(savedUser);
   }
 
-  private UserResponseDto mapToResponse(User savedUser) {
+  public UserResponseDto mapToResponse(User savedUser) {
     UserResponseDto responseDto = new UserResponseDto();
     responseDto.setId(savedUser.getId());
     responseDto.setEmail(savedUser.getEmail());
@@ -40,5 +49,17 @@ public class UserService {
     responseDto.setCreatedAt(savedUser.getCreatedAt());
     responseDto.setUpdatedAt(savedUser.getUpdateAt());
     return responseDto;
+  }
+
+  public User authenticate(LoginRequest loginRequest) {
+    User user = userRepository.findByEmail(loginRequest.getEmail());
+    if (user == null)
+      throw new RuntimeException("Invalid Credentials");
+
+    if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      throw new RuntimeException("Invalid Credentials");
+    }
+
+    return user;
   }
 }

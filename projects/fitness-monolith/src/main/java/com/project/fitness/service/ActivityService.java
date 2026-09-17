@@ -22,7 +22,7 @@ public class ActivityService {
 
   public ActivityResponseDto trackActivity(ActivityRequestDto activityRequestDto) {
     User user = userRepository.findById(activityRequestDto.getUserId())
-        .orElseThrow(() -> new RuntimeException("Invalid User" + activityRequestDto.getUserId()));
+        .orElseThrow(() -> new RuntimeException("Invalid User " + activityRequestDto.getUserId()));
     Activity activity = Activity.builder()
         .user(user)
         .type(activityRequestDto.getType())

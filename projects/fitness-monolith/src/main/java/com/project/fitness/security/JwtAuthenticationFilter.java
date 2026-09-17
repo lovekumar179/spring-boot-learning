@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           HttpServletResponse response, // gives outgoing response
           FilterChain filterChain
   ) throws ServletException, IOException {
-    System.out.println("AuthTokenFilter Called ");
     try {
       String jwt = parseJwt(request); //Extracting Jwt from header
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
